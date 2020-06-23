@@ -1,23 +1,68 @@
 version: "3"
 services:
   cockroach:
+    container_name: cockroach
     image: cockroachdb/cockroach:latest
     ports:
       - "26257:26257"
-      - "8080:8080"
-    networks:
-      - roachnet
+      - "8081:8080"
     command: start --insecure
-  db-init:
-    image: cockroachdb/cockroach:latest
     networks:
-      - roachnet
+      roachnet:
+        aliases:
+          - roachmaster
+  
+  roach2:
+    container_name: roach2
+    image: cockroachdb/cockroach:latest
+    command: start --insecure --join=cockroach
+    depends_on:
+      - cockroach
+    networks:
+      roachnet:
+        aliases:
+          - roach2
+
+  roach3:
+    container_name: roach3
+    image: cockroachdb/cockroach:latest
+    command: start --insecure --join=cockroach
+    depends_on:
+      - cockroach
+    networks:
+      roachnet:
+        aliases:
+          - roach3
+
+  dbinit:
+    image: cockroachdb/cockroach:latest
     depends_on:
       - cockroach
     volumes:
       - ./cockroach/setup_db.sh:/setup_db.sh
     entrypoint: "/bin/bash"
     command: /setup_db.sh
+    networks:
+      - roachnet
+
+  server:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - dbinit
+    networks:
+      - roachnet
+
+  vue:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    networks:
+      - roachnet
 
 networks:
   roachnet:
+    driver: bridge
