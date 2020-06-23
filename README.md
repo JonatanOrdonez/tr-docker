@@ -1,6 +1,6 @@
 # tr-docker
 
-## Install Docker
+### Install Docker
 * Windows: https://docs.docker.com/docker-for-windows/install/
 * Linux: https://docs.docker.com/engine/install/ubuntu/
 * Mac: https://docs.docker.com/docker-for-mac/install/
