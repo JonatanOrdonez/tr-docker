@@ -15,6 +15,7 @@ WORKDIR /usr/src/app
 EXPOSE 4000
 
 ENV GO_ENV prd 
+ENV WHITE_LIST http://localhost:3000
 ENV PORT 4000
 ENV DB_HOST roachmaster
 ENV DB_NAME catching
